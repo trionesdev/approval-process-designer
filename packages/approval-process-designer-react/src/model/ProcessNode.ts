@@ -1,8 +1,9 @@
-import {autorun, define, observable, observe, reaction} from "@formily/reactive";
-import randomstring from "randomstring"
+import {define, observable, observe, reaction} from "@formily/reactive";
+import Chance from 'chance';
 import _ from "lodash";
 import {GlobalStore} from "../store";
 import {ApprovalProcessEngine} from "./ApprovalProcessEngine";
+const chance = new Chance();
 
 export type ProcessNodeType = 'START' | 'ROUTE' | 'CONDITION' | 'APPROVAL' | 'CC' | 'END'
 
@@ -37,10 +38,7 @@ export class ProcessNode {
     constructor(node: IProcessNode, parentNode?: ProcessNode) {
         this.engine = node.engine
         this.isSourceNode = node.isSourceNode
-        this.id = node.id || `Activity_${randomstring.generate({
-            length: 10,
-            charset: 'alphabetic'
-        })}`
+        this.id = node.id || `Activity_${chance.string({ length: 10, alpha: true })}`
         this.type = node.type
         this.componentName = node.componentName || node.type
         this.prevNodeId = parentNode?.id
@@ -170,9 +168,24 @@ export class ProcessNode {
                     return conditionNode.id !== this.id
                 })
             } else {
+                //只有2个分支的时候，删除当前分支所有链路节点，另一分支，如果有除了条件节点之外的节点，则保留，否则，清除整个路由节点
                 const parentParentNode = ProcessNodes.get(parentNode.prevNodeId) //条件节点的父节点是路由节点，如果清除整个路由，需要找到父节点的父节点
+                const parentNodeNextNode = parentNode.nextNode
+                parentParentNode.setNextNode(null) //这里要断开节点链，否则可能造成递归渲染
+
+
                 linkedIds.push(parentNode.id);
-                parentParentNode?.setNextNode(parentNode.nextNode)
+                const remainNode = _.find(parentNode.conditionNodes, (conditionNode: any) => {
+                    return conditionNode.id !== this.id
+                })
+                const {deleteIds,startNode,endNode} = this.processRaminRouteBranch(remainNode)
+                linkedIds.push(...deleteIds)
+                if (startNode){
+                    parentParentNode.setNextNode(startNode)
+                    endNode.setNextNode(parentNodeNextNode)
+                }else {
+                    parentParentNode?.setNextNode(parentNodeNextNode)
+                }
             }
             _.forEach(linkedIds, (id: string) => {
                 ProcessNodes.delete(id)
@@ -218,6 +231,42 @@ export class ProcessNode {
         return ids
     }
 
+    /**
+     * 处理剩下的分支(default branch)，删除条件节点，保留其他节点
+     * @param node
+     */
+    processRaminRouteBranch=(node:ProcessNode):{deleteIds?:string[],startNode?:ProcessNode,endNode?:ProcessNode}=>{
+        const ids = []
+        const getStartNode = (node:ProcessNode) => {
+            if (!node){
+                return null;
+            }
+            let startNode = node
+            while (startNode?.type==='CONDITION'){
+                ids.push(startNode.id)
+                startNode = startNode.nextNode
+            }
+            return startNode
+        }
+
+        const getEndNode = (node:ProcessNode) => {
+            if (!node){
+                return null
+            }
+            let endNode = node
+            while (endNode?.nextNode){
+               endNode = endNode.nextNode
+            }
+            return endNode
+        }
+        const startNode = getStartNode(node)
+        const endNode = getEndNode(startNode)
+        return {
+            deleteIds: ids,
+            startNode: startNode,
+            endNode: endNode
+        }
+    }
 
     get index() {
         if (this.type === 'CONDITION') {

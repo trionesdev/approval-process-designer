@@ -5,7 +5,7 @@ import {
 } from "@trionesdev/approval-process-designer-react";
 import createResource = DesignerCore.createResource;
 import {useState} from "react";
-import {Button, Drawer, Form, Input} from "antd";
+import {Button, Drawer} from "antd";
 
 
 export const ConditionActivity: ActivityFC<IActivity> = ({...props}) => {
