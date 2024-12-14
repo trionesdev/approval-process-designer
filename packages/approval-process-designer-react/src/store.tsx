@@ -9,11 +9,11 @@ export const DESIGNER_RESOURCES_STORE: { value: Record<string, IResource> } = ob
 
 export namespace GlobalStore {
     export function registerIcons(icons: Record<string, JSX.Element>) {
-        Object.assign(DESIGNER_ICONS_STORE, icons)
+        Object.assign(DESIGNER_ICONS_STORE.value, icons)
     }
 
     export function getIcon(iconName: string) {
-        return DESIGNER_ICONS_STORE[iconName]
+        return DESIGNER_ICONS_STORE.value[iconName]
     }
 
     export function registerActivityResources(activities: Record<string, ActivityFC<any>>) {
@@ -21,15 +21,15 @@ export namespace GlobalStore {
         _.forEach(activities, (activity: ActivityFC<any>, key: string) => {
             resourceMap[activity?.Resource?.componentName || key] = activity?.Resource
         })
-        Object.assign(DESIGNER_RESOURCES_STORE, resourceMap)
+        Object.assign(DESIGNER_RESOURCES_STORE.value, resourceMap)
     }
 
     export function getActivityResource(componentName: string): IResource {
-        return DESIGNER_RESOURCES_STORE[componentName]
+        return DESIGNER_RESOURCES_STORE.value[componentName]
     }
 
     export function getAddableActivityResources(): IResource[] {
-        return _.filter(_.values(DESIGNER_RESOURCES_STORE), (resource: IResource) => {
+        return _.filter(_.values(DESIGNER_RESOURCES_STORE.value), (resource: IResource) => {
             return resource?.addable
         }) || []
     }
@@ -39,7 +39,7 @@ export namespace GlobalStore {
      * 获取条件节点资源
      */
     export function getConditionActivityResource(): IResource {
-        return _.find(_.values(DESIGNER_RESOURCES_STORE), (resource: IResource) => {
+        return _.find(_.values(DESIGNER_RESOURCES_STORE.value), (resource: IResource) => {
             return resource?.type == 'CONDITION'
         })
     }

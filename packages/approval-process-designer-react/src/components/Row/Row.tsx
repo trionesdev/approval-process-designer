@@ -1,4 +1,4 @@
-import React, {FC, forwardRef} from "react";
+import React, {forwardRef} from "react";
 import styled from "@emotion/styled";
 import _ from "lodash";
 
@@ -36,14 +36,16 @@ export const Row = forwardRef(({
 
     const handleRender = (children: React.ReactNode) => {
         const childArray = React.Children.toArray(children);
-        return childArray.map((child: React.ReactElement) => {
-            return React.cloneElement(child, _.merge({}, child.props, {
-                style: {
-                    background: "white",
-                    ...child.props.style,
-                    paddingLeft: columnGap, paddingRight: columnGap
-                }, ...child.props
-            }))
+        return childArray.map((child: React.ReactNode) => {
+            if (React.isValidElement(child)) {
+                return React.cloneElement(child, _.merge({}, child.props, {
+                    style: {
+                        background: "white",
+                        ...child.props.style,
+                        paddingLeft: columnGap, paddingRight: columnGap
+                    }, ...child.props
+                }))
+            }
         })
     }
 
