@@ -3,6 +3,7 @@ import Chance from 'chance';
 import _ from "lodash";
 import {GlobalStore} from "../store";
 import {ApprovalProcessEngine} from "./ApprovalProcessEngine";
+
 const chance = new Chance();
 
 export type ProcessNodeType = 'START' | 'ROUTE' | 'CONDITION' | 'APPROVAL' | 'CC' | 'END'
@@ -18,6 +19,7 @@ export interface IProcessNode {
     title?: string
     description?: string
     props?: any
+    defaultCondition?: boolean
 }
 
 const ProcessNodes = new Map<string, ProcessNode>()
@@ -34,11 +36,12 @@ export class ProcessNode {
     title: string
     description: string
     props: any
+    defaultCondition?: boolean
 
     constructor(node: IProcessNode, parentNode?: ProcessNode) {
         this.engine = node.engine
         this.isSourceNode = node.isSourceNode
-        this.id = node.id || `Activity_${chance.string({ length: 10, alpha: true })}`
+        this.id = node.id || `Activity_${chance.string({length: 10, alpha: true})}`
         this.type = node.type
         this.componentName = node.componentName || node.type
         this.prevNodeId = parentNode?.id
@@ -48,6 +51,7 @@ export class ProcessNode {
         this.description = node.description
         this.props = node.props
         this.engine = parentNode?.engine
+        this.defaultCondition = node.defaultCondition
 
         ProcessNodes.set(this.id, this)
         if (node) {
@@ -141,10 +145,11 @@ export class ProcessNode {
         }, parentNode)
         if (this.type == 'ROUTE') {
             const conditionResource = GlobalStore.getConditionActivityResource()
-            const condition1 = conditionResource.node.clone(node)
+            const firstCondition = conditionResource.node.clone(node)
             const conditionDefault = conditionResource.node.clone(node)
-            conditionDefault.props = _.assign(conditionDefault.props, {defaultCondition: true})
-            node.setConditionNodes([condition1, conditionDefault])
+            // conditionDefault.props = _.assign(conditionDefault.props, {defaultCondition: true})
+            conditionDefault.defaultCondition = true
+            node.setConditionNodes([firstCondition, conditionDefault])
         }
         return node
     }
@@ -178,12 +183,12 @@ export class ProcessNode {
                 const remainNode = _.find(parentNode.conditionNodes, (conditionNode: any) => {
                     return conditionNode.id !== this.id
                 })
-                const {deleteIds,startNode,endNode} = this.processRaminRouteBranch(remainNode)
+                const {deleteIds, startNode, endNode} = this.processRaminRouteBranch(remainNode)
                 linkedIds.push(...deleteIds)
-                if (startNode){
+                if (startNode) {
                     parentParentNode.setNextNode(startNode)
                     endNode.setNextNode(parentNodeNextNode)
-                }else {
+                } else {
                     parentParentNode?.setNextNode(parentNodeNextNode)
                 }
             }
@@ -235,27 +240,31 @@ export class ProcessNode {
      * 处理剩下的分支(default branch)，删除条件节点，保留其他节点
      * @param node
      */
-    processRaminRouteBranch=(node:ProcessNode):{deleteIds?:string[],startNode?:ProcessNode,endNode?:ProcessNode}=>{
+    processRaminRouteBranch = (node: ProcessNode): {
+        deleteIds?: string[],
+        startNode?: ProcessNode,
+        endNode?: ProcessNode
+    } => {
         const ids = []
-        const getStartNode = (node:ProcessNode) => {
-            if (!node){
+        const getStartNode = (node: ProcessNode) => {
+            if (!node) {
                 return null;
             }
             let startNode = node
-            while (startNode?.type==='CONDITION'){
+            while (startNode?.type === 'CONDITION') {
                 ids.push(startNode.id)
                 startNode = startNode.nextNode
             }
             return startNode
         }
 
-        const getEndNode = (node:ProcessNode) => {
-            if (!node){
+        const getEndNode = (node: ProcessNode) => {
+            if (!node) {
                 return null
             }
             let endNode = node
-            while (endNode?.nextNode){
-               endNode = endNode.nextNode
+            while (endNode?.nextNode) {
+                endNode = endNode.nextNode
             }
             return endNode
         }

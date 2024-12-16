@@ -41,9 +41,7 @@ function App() {
                     {
                         type: 'CONDITION',
                         componentName: 'ConditionActivity',
-                        props: {
-                            defaultCondition: true,
-                        }
+                        defaultCondition: true,
                     }
                 ]
             }

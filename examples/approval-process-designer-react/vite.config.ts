@@ -4,7 +4,7 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/triones-approval-process-designer/',
+  base: process.env.NODE_ENV === 'production' ?'/triones-approval-process-designer/': '/',
   plugins: [react()],
   resolve: {
     alias: {

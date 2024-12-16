@@ -144,7 +144,7 @@ export const ConditionActivity: FC<ConditionActivityProps> = ({
     const [editing, setEditing] = useState(false)
 
     const handleOnClick = (e: any) => {
-        if (processNode.props?.defaultCondition) {
+        if (processNode?.defaultCondition) {
             return
         }
         onClick?.(processNode)
@@ -171,7 +171,7 @@ export const ConditionActivity: FC<ConditionActivityProps> = ({
                 <div className={classNames('condition-activity-box')} onClick={handleOnClick}>
                     <div className={classNames(`header`)} >
                         {
-                            processNode?.props?.defaultCondition ?
+                            processNode?.defaultCondition ?
                                 <>
                                 <span className={classNames('default-title')}>默认条件
                                     <Tooltip placement={`top`} showArrow={true} trigger={`hover`}

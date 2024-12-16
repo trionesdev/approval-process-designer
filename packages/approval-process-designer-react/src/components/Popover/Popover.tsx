@@ -21,6 +21,7 @@ const popoverCss = css({
         minWidth: '250px',
         color: 'rgba(255,255,255)',
         transformOrigin: 'var(--arrow-x, 50%) var(--arrow-y, 50%)',
+        boxShadow:'0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
         [`&-hidden`]: {
             display: 'none'
         },
