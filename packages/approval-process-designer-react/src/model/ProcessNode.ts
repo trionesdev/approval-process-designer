@@ -67,7 +67,8 @@ export class ProcessNode {
             description: observable.ref,
             nextNode: observable.ref,
             conditionNodes: observable.shallow,
-            props: observable
+            props: observable,
+            defaultCondition: observable.ref
         })
 
         reaction(() => {

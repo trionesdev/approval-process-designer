@@ -30,7 +30,8 @@ export namespace DesignerCore {
                 description: processNode.description,
                 props: _.isEmpty(processNode.props) ? null : processNode.props,
                 nextNode: toSchema(processNode.nextNode),
-                conditionNodes: processNode.conditionNodes?.map(toSchema) || []
+                conditionNodes: processNode.conditionNodes?.map(toSchema) || [],
+                defaultCondition: processNode.defaultCondition
             }
         }
 
