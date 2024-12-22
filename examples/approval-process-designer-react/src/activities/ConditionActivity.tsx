@@ -25,7 +25,7 @@ export const ConditionActivity: ActivityFC<IActivity> = ({...props}) => {
         <Drawer open={open} onClose={() => {
             setOpen(false)
         }}
-                footer={<>                    <Button onClick={handleSave}>确定</Button></>}
+                footer={<> <Button onClick={handleSave}>确定</Button></>}
         >
             condition drawer
         </Drawer>

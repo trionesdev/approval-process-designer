@@ -199,7 +199,7 @@ export const ConditionActivity: FC<ConditionActivityProps> = ({
                     </div>
                     <div className={classNames(`body`)}>
                         <div
-                            className={classNames(`description`)}>{processNode?.props?.defaultCondition ? '其他条件进入此流程' : (processNode.description || '请设置条件')}</div>
+                            className={classNames(`description`)}>{processNode?.defaultCondition ? '其他条件进入此流程' : (processNode.description || '请设置条件')}</div>
                     </div>
                 </div>
                 <AddActivityBox processNode={processNode}/>
