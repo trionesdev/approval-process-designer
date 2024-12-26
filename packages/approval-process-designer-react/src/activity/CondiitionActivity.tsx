@@ -126,7 +126,8 @@ const ConditionActivityStyled = styled('div')({
                 '.description': {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    display: '-webkit-box'
+                    display: '-webkit-box',
+                    whiteSpace: 'pre'
                 }
             }
         }
