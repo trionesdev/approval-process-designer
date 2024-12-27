@@ -34,7 +34,7 @@ export class ApprovalProcessEngine {
 
     handleChange = _.debounce((msg: any) => {
         this.onChange?.(DesignerCore.transformToSchema(this.process))
-    }, 100)
+    }, 0)
 
     setOnchange(fn: (value: any) => void) {
         this.onChange = fn
