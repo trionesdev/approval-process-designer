@@ -10,7 +10,7 @@ import {Watermark} from "antd";
 import * as Icons from "./activities/Icons"
 
 function App() {
-    const [data,setData] = useState<IProcessNode>({
+    const [data, setData] = useState<IProcessNode>({
         type: 'START',
         componentName: 'StartActivity',
         title: '发起人',
@@ -55,18 +55,32 @@ function App() {
     GlobalStore.registerIcons(Icons);
     return (
         <div>
-            <Watermark style={{height: '100%'}} content={['书阙', '北斗开源']}>
-                <ApprovalProcessDesigner value={data} onChange={handleOnChange}>
-                    <StudioPanel>
-                        <ProcessWidget activities={{
-                            StartActivity,
-                            ApprovalActivity,
-                            RouteActivity,
-                            ConditionActivity,
-                            CcActivity
-                        }}/>
-                    </StudioPanel>
-                </ApprovalProcessDesigner>
+            <Watermark style={{height: '100%', display: 'flex', flexDirection: 'column'}}
+                       content={['书阙', '北斗开源']}>
+                <div style={{
+                    padding: 8,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #ccc'
+                }}>
+                    <span>Triones Approval Process Designer</span>
+                    <div>
+                        <a href={`https://github.com/trionesdev/triones-approval-process-designer`} target={'_blank'}>Github</a>
+                    </div>
+                </div>
+                <div style={{flex: 1}}>
+                    <ApprovalProcessDesigner value={data} onChange={handleOnChange}>
+                        <StudioPanel>
+                            <ProcessWidget activities={{
+                                StartActivity,
+                                ApprovalActivity,
+                                RouteActivity,
+                                ConditionActivity,
+                                CcActivity
+                            }}/>
+                        </StudioPanel>
+                    </ApprovalProcessDesigner>
+                </div>
             </Watermark>
         </div>
     );
